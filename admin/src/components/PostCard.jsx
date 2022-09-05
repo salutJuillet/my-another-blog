@@ -30,10 +30,10 @@ const PostCard = ({post}) => {
         <p>{tags.map(tag => `#${tag}`).join(', ')}</p>
 
         <div className="flex space-x-3">
-          <Link to={`/update-post/${slug}`} className='w-8 h-8 rounded-full border-black bg-black hover:bg-white hover:border hover:text-blue-600 flex justify-center items-center text-white'>
+          <Link to={`/update-post/${slug}`} className='w-8 h-8 rounded-full border-black bg-black text-blue-300 hover:bg-white hover:border hover:text-blue-600 flex justify-center items-center'>
             <AiOutlineEdit />
           </Link>
-          <Link to='delete-post' className='w-8 h-8 rounded-full border-black bg-black hover:bg-white  hover:border hover:text-red-600 flex justify-center items-center text-white'>
+          <Link to='delete-post' className='w-8 h-8 rounded-full border-black bg-black text-red-300 hover:bg-white hover:border hover:text-red-600 flex justify-center items-center'>
             <AiOutlineDelete />
           </Link>
         </div>
