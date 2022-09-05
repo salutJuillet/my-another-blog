@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.logo{
+    max-width: 150px;
+}
+.min-logo{
+    max-width: 60px;
+}
