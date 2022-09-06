@@ -9,7 +9,7 @@ const PostCard = ({post}) => {
   const { title, content, meta, tags, thumbnail, slug, createdAt} = post;
 
   return (
-    <div className='border-2 border-black rounded-md overflow-hidden p-3 space-y-1.5'>
+    <div className='border-2 border-black rounded-md overflow-hidden p-3 space-y-1.5 bg-white' style={{minWidth:210}}>
         {
             thumbnail ? (
                 // <img src={`/server/uploads/${thumbnail}`} alt={title} className="aspect-video" />
@@ -21,8 +21,8 @@ const PostCard = ({post}) => {
         <h1 className="text-lg font-semibold text-gray-700">
           { title.length > 40 ? (title.substring(0, 40) +'...') : title}
         </h1>
-        <div className='border border-dashed p-1 border-black  rounded-md overflow-hidden'>
-          <p className='text-gray-500'>
+        <div className='border border-dashed p-1 border-black rounded-md overflow-hidden'>
+          <p className='text-gray-500 text-sm'>
             { content.length > 72 ? (content.substring(0, 72) +'...') : content}
           </p>
         </div>

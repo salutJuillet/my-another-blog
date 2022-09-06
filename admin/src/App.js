@@ -19,7 +19,7 @@ const App = () => {
   )
 
   return (
-    <div className="flex">
+    <div className="flex" style={{fontFamily:'AppleSDGothicNeo'}}>
       {/* 네비게이션 */}
       <div className={getNavWidth() + ' min-h-screen transition-width border border-r bg-black'}>
         <div className='sticky top-0'>
