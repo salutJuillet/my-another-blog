@@ -27,7 +27,11 @@ const PostCard = ({post}) => {
           </p>
         </div>
         <p>{dateFormat(createdAt, "mediumDate")}</p>
-        <p>{tags.map(tag => `#${tag}`).join(', ')}</p>
+        <div className='flex flex-wrap'>
+          {tags.map(tag => (
+            <span className='hover:underline hover:cursor-pointer mr-1'>#{tag}</span>
+          ))}
+        </div>
 
         <div className="flex space-x-3">
           <Link to={`/update-post/${slug}`} className='w-8 h-8 rounded-full border-black bg-black text-blue-300 hover:bg-white hover:border hover:text-blue-600 flex justify-center items-center'>
