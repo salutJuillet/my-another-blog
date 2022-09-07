@@ -5,7 +5,9 @@ const {
     updatePost, 
     getPost,
     getPosts, 
-    getFeaturedPosts  } = require('../controllers/post');
+    getFeaturedPosts,
+    searchPost,
+    getRelatedPosts  } = require('../controllers/post');
 const { parseData } = require('../middlewares');
 const multer = require('../middlewares/multer');
 const { postValidator, validate } = require('../middlewares/postValidator');
@@ -22,7 +24,7 @@ router.post(
 
 //수정
 router.put(
-    "/:postId",
+    '/:postId',
     multer.single('thumbnail'), 
     parseData,
     postValidator, 
@@ -32,8 +34,10 @@ router.put(
 //삭제
 router.delete('/:postId', deletePost);
 
-router.get("/single/:postId", getPost);
-router.get("/featured-posts", getFeaturedPosts);
-router.get('/posts', getPosts)
+router.get('/single/:slug', getPost);
+router.get('/featured-posts', getFeaturedPosts);
+router.get('/posts', getPosts);
+router.get('/search', searchPost);
+router.get('/related-posts/:postId', getRelatedPosts);
 
 module.exports = router
