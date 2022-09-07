@@ -3,6 +3,7 @@ const FeaturedPost = require('../models/featuredPost');
 const { isValidObjectId } = require('mongoose');
 const fs = require('fs');
 const path = require('path');
+const post = require('../models/post');
 const dir = path.join(__dirname, '../uploads');
 
 const FEATURED_POST_COUNT = 4;
@@ -141,16 +142,16 @@ exports.deletePost = async (req, res) => {
 }
 
 exports.getPost = async (req, res) => {
-    const { postId } = req.params;
-    if(!isValidObjectId(postId)) 
-       return res.status(401).json({ error: '아이디 번호가 없습니다.'});
+    const { slug } = req.params;
+    if(!slug) 
+       return res.status(401).json({ error: 'slug가 없습니다.'});
 
-    const post = await Post.findById(postId)
+    const post = await Post.findOne({slug});
     if(!post)
-      return res.status(401).json({ error: '내용을 찾을 수 없습니다.'});  
+      return res.status(401).json({ error: '게시물을 찾을 수 없습니다.'});  
 
     const featured = await isFeaturedPost(post._id);
-    const { title, content, meta, slug, tags, author, createdAt } = post;  
+    const { title, content, meta, tags, author, createdAt } = post;  
     res.json({
         post: {
             id: post._id,
@@ -175,7 +176,10 @@ exports.getPosts = async (req, res) => {
     .skip(parseInt(pageNo) * parseInt(limit))
     .limit(parseInt(limit));
 
-     res.json({ 
+    const postCount = await Post.countDocuments();
+    
+
+    res.json({ 
         posts : posts.map((post)=>({
            id: post._id,
            title: post.title,
@@ -186,8 +190,9 @@ exports.getPosts = async (req, res) => {
            author: post.author,
            createdAt: post.createdAt,
            tags: post.tags
-     }))
-   });
+        })),
+        postCount
+    });
 }
 
 exports.getFeaturedPosts = async (req, res) => {
@@ -207,3 +212,54 @@ exports.getFeaturedPosts = async (req, res) => {
         }))
     })
 } 
+
+exports.searchPost = async (req, res) => {
+    const {title} = req.query;
+    if(!title.trim()) return res.status(401).json({error: '일치하는 검색 결과가 존재하지 않습니다.'});
+
+    const posts = await Post.find({title: {$regex:title, $options: 'i'}}); //regex: 정규식, option i: 대소문자 구분 X
+
+    res.json({ 
+        posts : posts.map((post)=>({
+           id: post._id,
+           title: post.title,
+           content: post.content,
+           meta: post.meta,
+           slug: post.slug,
+           thumbnail: post.thumbnail?.filename,
+           author: post.author,
+           createdAt: post.createdAt,
+           tags: post.tags
+        }))
+    });
+}
+
+exports.getRelatedPosts = async (req, res) => {
+    const { postId } = req.params;
+    if(!isValidObjectId(postId)) return res.status(401).json({error:'아이디 번호가 없습니다.'});
+
+    const post = await Post.findById(postId);
+    if(!post) return res.status(401).json({error:'검색 결과가 존재하지 않습니다.'});
+
+    const relatedPosts = await Post.find({
+        tags: {$in: [...post.tags]},
+        _id: {$ne: post._id}
+    })
+    .sort({createdAt: -1}).limit(5);
+
+    const posts = await Post.find({title: {$regex:title, $options: 'i'}}); //regex: 정규식, option i: 대소문자 구분 X
+
+    res.json({ 
+        posts : posts.map((post)=>({
+           id: post._id,
+           title: post.title,
+           content: post.content,
+           meta: post.meta,
+           slug: post.slug,
+           thumbnail: post.thumbnail?.filename,
+           author: post.author,
+           createdAt: post.createdAt,
+           tags: post.tags
+        }))
+    });
+}

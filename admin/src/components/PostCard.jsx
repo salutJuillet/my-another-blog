@@ -3,7 +3,7 @@ import dateFormat from 'dateformat'
 import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai'
 import { Link } from 'react-router-dom'
 
-const PostCard = ({post}) => {
+const PostCard = ({post, onDeleteClick}) => {
 
   if(!post) return null;
   const { title, content, meta, tags, thumbnail, slug, createdAt} = post;
@@ -13,9 +13,10 @@ const PostCard = ({post}) => {
         {
             thumbnail ? (
                 // <img src={`/server/uploads/${thumbnail}`} alt={title} className="aspect-video" />
-                <img src={`uploads/${thumbnail}`} alt={title} className="aspect-square object-cover" />
+                <img src={`uploads/${thumbnail}`} alt={title} className="aspect-video object-cover" />
             ) : (
-                <img src='images/no_image_available.png' alt='No image' />
+                // <img src='images/no_image_available.png' alt='No image' className="aspect-video object-cover" />
+                ''
             )
         }
         <h1 className="text-lg font-semibold text-gray-700">
@@ -37,9 +38,10 @@ const PostCard = ({post}) => {
           <Link to={`/update-post/${slug}`} className='w-8 h-8 rounded-full border-black bg-black text-blue-300 hover:bg-white hover:border hover:text-blue-600 flex justify-center items-center'>
             <AiOutlineEdit />
           </Link>
-          <Link to='delete-post' className='w-8 h-8 rounded-full border-black bg-black text-red-300 hover:bg-white hover:border hover:text-red-600 flex justify-center items-center'>
+          <button onClick={onDeleteClick}
+                  className='w-8 h-8 rounded-full border-black bg-black text-red-300 hover:bg-white hover:border hover:text-red-600 flex justify-center items-center'>
             <AiOutlineDelete />
-          </Link>
+          </button>
         </div>
     </div>
   )
