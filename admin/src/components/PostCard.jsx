@@ -24,10 +24,16 @@ const PostCard = ({post, onDeleteClick}) => {
         </h1>
         <div className='border border-dashed p-1 border-black rounded-md overflow-hidden'>
           <p className='text-gray-500 text-sm'>
-            { content.length > 72 ? (content.substring(0, 72) +'...') : content}
+            {
+              thumbnail ? (
+                content.length > 80 ? (content.substring(0, 80) +'...') : content
+              ) : (
+                content.length > 150 ? (content.substring(0, 150) +'...') : content
+              )
+            }
           </p>
         </div>
-        <p>{dateFormat(createdAt, "mediumDate")}</p>
+        <p className='text-sm'>{dateFormat(createdAt, "mediumDate")}</p>
         <div className='flex flex-wrap'>
           {tags.map(tag => (
             <span className='hover:underline hover:cursor-pointer mr-1'>#{tag}</span>
