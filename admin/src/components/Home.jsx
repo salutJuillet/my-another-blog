@@ -66,14 +66,14 @@ const Home = () => {
           )
         }
       </div>
-      <div className='py-5 flex justify-center items-center'>
+      <div className='py-10 flex justify-center items-center'>
         {paginationArr.map((_, index) => {
           return <button 
                      onClick={()=>fetchMorePosts(index)}
                      className={
                         index === pageNo ? 
-                          'text-white bg-black border-black border rounded-full w-7 h-7 pt-0.5 mx-0.5' :
-                          'bg-white border-black border rounded-full w-7 h-7 pt-0.5 mx-0.5'
+                          'text-white bg-black border-black border rounded-full w-6 h-6 pt-px mx-0.5' :
+                          'bg-white border-black border rounded-full w-6 h-6 pt-px mx-0.5'
                      }>
                     {index + 1}
                  </button>
