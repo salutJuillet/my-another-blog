@@ -217,7 +217,7 @@ exports.searchPost = async (req, res) => {
     const {title} = req.query;
     if(!title.trim()) return res.status(401).json({error: '일치하는 검색 결과가 존재하지 않습니다.'});
 
-    const posts = await Post.find({title: {$regex:title, $options: 'i'}}); //regex: 정규식, option i: 대소문자 구분 X
+    const posts = await Post.find({title: {$regex:title, $options: 'i'}}); //regex: 정규식, options i: 대소문자 구분 X
 
     res.json({ 
         posts : posts.map((post)=>({
@@ -247,18 +247,18 @@ exports.getRelatedPosts = async (req, res) => {
     })
     .sort({createdAt: -1}).limit(5);
 
-    const posts = await Post.find({title: {$regex:title, $options: 'i'}}); //regex: 정규식, option i: 대소문자 구분 X
+    const posts = await Post.find({title: {$regex:title, $options: 'i'}}); //regex: 정규식, options i: 대소문자 구분 X
 
     res.json({ 
-        posts : posts.map((post)=>({
+        posts : relatedPosts.map((post)=>({
            id: post._id,
            title: post.title,
-           content: post.content,
+        //    content: post.content,
            meta: post.meta,
            slug: post.slug,
            thumbnail: post.thumbnail?.filename,
            author: post.author,
-           createdAt: post.createdAt,
+        //    createdAt: post.createdAt,
            tags: post.tags
         }))
     });

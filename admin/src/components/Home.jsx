@@ -8,7 +8,7 @@ let pageNo = 0;
 const POST_LIMIT = 9;
 
 const Home = () => {
-  const {searchResults} = useSearch();
+  const {searchResult} = useSearch();
   const [posts, setPosts] = useState([]);
   const [totalPostCount, setTotalPostCount] = useState([]);
 
@@ -54,8 +54,8 @@ const Home = () => {
     <div>
       <div className='grid grid-cols-3 gap-3'>
         {
-          searchResults.length ? (
-            searchResults.map((post)=>(
+          searchResult.length ? (
+            searchResult.map((post)=>(
               <PostCard post={post} key={post.id} onDeleteClick={()=>handleDelete(post)} />
             ))
           )

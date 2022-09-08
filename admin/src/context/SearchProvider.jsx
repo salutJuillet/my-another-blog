@@ -1,19 +1,19 @@
-import React, { createContext, useState } from 'react'
-import { useContext } from 'react';
+import React, { createContext,useContext, useState } from 'react'
 import { searchPost } from '../api/post';
 
 const SearchContext = createContext();
 
-const SearchProvider = ({children}) => {
+export default function SearchProvider({children}){
 
   const [searchResult, setSearchResult] = useState([]);
+  
   const handleSearch = async (query) => {
     const {error, posts} = await searchPost(query);
     if(error) return console.log(error);
     setSearchResult(posts);
   }
 
-  const resetSearch = (query) => {
+  const resetSearch = () => {
     setSearchResult([]);
   }
 
@@ -23,7 +23,5 @@ const SearchProvider = ({children}) => {
     </SearchContext.Provider>
   )
 }
-
-export default SearchProvider;
 
 export const useSearch = () => useContext(SearchContext);

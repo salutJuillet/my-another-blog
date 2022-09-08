@@ -33,7 +33,6 @@ router.put(
 )
 //삭제
 router.delete('/:postId', deletePost);
-
 router.get('/single/:slug', getPost);
 router.get('/featured-posts', getFeaturedPosts);
 router.get('/posts', getPosts);
