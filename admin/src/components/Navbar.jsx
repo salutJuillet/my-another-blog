@@ -25,13 +25,25 @@ const Navbar = ({closed}) => {
         </div>
         <ul>
             <li>
-                <NavItem to='/' value='Home'  Icon={closed?<AiFillHome size={25} />:<AiFillHome size={20} />} closed={closed} />
+                <NavItem 
+                    to='/' 
+                    value='Home'  
+                    Icon={closed?<AiFillHome size={25} />:<AiFillHome size={20} />} 
+                    closed={closed} />
             </li>
             <li>
-                <NavItem to='/create-post' value='CreatePost' Icon={closed?<AiFillFileAdd size={25} />:<AiFillFileAdd size={20} />} closed={closed} />
+                <NavItem 
+                    to='/create-post' 
+                    value='CreatePost' 
+                    Icon={closed?<AiFillFileAdd size={25} />:<AiFillFileAdd size={20} />} 
+                    closed={closed} />
             </li>
             <li>
-                <NavItem to='/update-post' value='UpdatePost' Icon={closed?<AiFillEdit size={25} />:<AiFillEdit size={20} />} closed={closed} />
+                <NavItem 
+                    to='/update-post' 
+                    value='UpdatePost' 
+                    Icon={closed?<AiFillEdit size={25} />:<AiFillEdit size={20} />} 
+                    closed={closed} />
             </li>
         </ul>
     </nav>
