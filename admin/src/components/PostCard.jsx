@@ -9,7 +9,7 @@ const PostCard = ({post, onDeleteClick}) => {
   const { title, content, meta, tags, thumbnail, slug, createdAt} = post;
 
   return (
-    <div className='border-2 border-black rounded-md overflow-hidden p-3 space-y-1.5 bg-white' style={{minWidth:210}}>
+    <div className='border-2 border-black rounded-md overflow-hidden p-3 space-y-1.5 bg-white'>
         {
             thumbnail ? (
                 // <img src={`/server/uploads/${thumbnail}`} alt={title} className="aspect-video" />
