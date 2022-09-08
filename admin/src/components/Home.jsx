@@ -70,7 +70,11 @@ const Home = () => {
         {paginationArr.map((_, index) => {
           return <button 
                      onClick={()=>fetchMorePosts(index)}
-                     className={index === pageNo ? 'text-blue-500 border-2' : 'text-gray-500 border-2'}>
+                     className={
+                        index === pageNo ? 
+                          'text-white bg-black border-black border rounded-full w-7 h-7 pt-0.5 mx-0.5' :
+                          'bg-white border-black border rounded-full w-7 h-7 pt-0.5 mx-0.5'
+                     }>
                     {index + 1}
                  </button>
         })}
