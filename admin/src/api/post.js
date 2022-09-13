@@ -1,3 +1,4 @@
+import { createFactory } from 'react';
 import client from './client'
 
 /* 게시물 가져오기 */
@@ -32,6 +33,19 @@ export const deletePost = async (postId) => {
 export const searchPost = async (query) => {
     try{
         const {data} = await client(`/post/search?title=${query}`);
+        return data;
+    }catch(error){
+        const {response} = error;
+        if(response?.data){
+            return response.data;
+        }
+        return {error: error.message || error}
+    }
+}
+
+export const createPost = async (formData) => {
+    try{
+        const {data} = await client.post('/post/create', formData);
         return data;
     }catch(error){
         const {response} = error;
