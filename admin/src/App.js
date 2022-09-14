@@ -3,7 +3,7 @@ import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai'
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
-import PostForm from './components/PostForm';
+import CreatePost from './components/CreatePost';
 import UpdatePost from './components/UpdatePost';
 import SearchForm from './components/SearchForm';
 
@@ -40,7 +40,7 @@ const App = () => {
         <div className='max-w-screen-lg mx-auto p-10'>
           <Routes>
             <Route path='/' element={<Home />} />
-            <Route path='/create-post' element={<PostForm />} />
+            <Route path='/create-post' element={<CreatePost />} />
             <Route path='/update-post/:slug' element={<UpdatePost />} />
           </Routes>
         </div>
