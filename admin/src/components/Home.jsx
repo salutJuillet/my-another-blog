@@ -69,6 +69,7 @@ const Home = () => {
       <div className='py-10 flex justify-center items-center'>
         {paginationArr.map((_, index) => {
           return <button 
+                     key={index + 1}
                      onClick={()=>fetchMorePosts(index)}
                      className={
                         index === pageNo ? 

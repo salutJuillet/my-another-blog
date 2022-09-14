@@ -35,8 +35,8 @@ const PostCard = ({post, onDeleteClick}) => {
         </div>
         <p className='text-sm'>{dateFormat(createdAt, "mediumDate")}</p>
         <div className='flex flex-wrap'>
-          {tags.map(tag => (
-            <span className='hover:underline hover:cursor-pointer mr-1'>#{tag}</span>
+          {tags.map((tag, index) => (
+            <span key={index} className='hover:underline hover:cursor-pointer mr-1'>#{tag}</span>
           ))}
         </div>
 
