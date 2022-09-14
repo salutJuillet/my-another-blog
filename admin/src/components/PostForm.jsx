@@ -1,11 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {ImSpinner11, ImEye, ImFilePicture, ImFileEmpty } from 'react-icons/im'
-import { EditorState, convertToRaw } from 'draft-js'
-import { Editor } from "react-draft-wysiwyg";
-import draftToHtml from 'draft-to-html';
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import styled from 'styled-components'
 import post from '../api/post'
+
 
 const MyStyle = styled.form`
   .wrapper-class{
@@ -29,58 +26,50 @@ const MyStyle = styled.form`
   }
 `
 
-// const mdRules = [
-//   {titel: 'From h1 to h6', rule:'# Heading -> ###### Heading'},
-//   {title: 'Blobkquote', rule: '> 인용문'},
-//   {title: 'Image', rule: '![image alt](http://image_url.com)'},
-//   {title: 'Link', rule: '[Link Text](http//your_link.com)'},
-// ]
+const mdRules = [
+  {title: 'From h1 to h6', rule:'# Heading => ######'},
+  {title: 'Image', rule:'![alt 내용](http://이미지경로)'},
+  {title: 'Link', rule:'[Link 텍스트](http://링크경로)'},
+  {title: 'Blockquote', rule:'> Your Quote'}
+]
 
 const PostForm = () => {
-  const [myForm, setMyForm] = useState({
-    title: '',
-    meta: '',
-    tags: [],
-    author: 'juillet',
-    file: null,
-    filename: ''
+  const [postInfo, setPostInfo] = useState({
+    title:'',
+    thumbnail:'',
+    featured:false,
+    content:'',
+    tags:[],
+    meta:'',
+    author:'juillet'
   });
+  const {title, content, featured, tags, meta} = postInfo;
+  const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
 
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [featured, setFeatured] = useState(false);
-  const handleFile = (e) => {
-    setMyForm({
-      ...myForm,
-      file: e.target.files[0],
-      filename: e.target.value
-    })
-    // console.dir(e.target.files);
+  const handleChange = ({target}) => {
+    const {value, name} = target;
+
+    if(name === 'thumbnail'){
+        const file = target.files[0];
+        if(!file.type?.includes('image')){
+            return alert('이미지만 업로드 가능합니다.');
+        }
+        setPostInfo({...postInfo, thumbnail:value});
+        return setSelectedThumbUrl(URL.createObjectURL(file));
+    }
+
+    setPostInfo({...postInfo, [name]:value});
   }
 
   const titleRef = useRef();
   const metaRef = useRef();
   const tagRef = useRef();
 
-  // useEffect(()=>{
-  //   titleRef.current.focus(); //제목 input을 focused
-  // }, [])
-
-  const handleMyForm = (e) => {
-    setMyForm({
-      ...myForm,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handleFeatured = () => {
-    setFeatured(!featured);
-  }
-
   const enterComma = (e) => {
     const {value} = e.target;
     if(e.keyCode === 32){ //태그 작성 시 스페이스바를 눌렀을 때 자동으로 ,가 생성됨
-      setMyForm({
-        ...myForm,
+      setPostInfo({
+        ...postInfo,
         tags: value + ','
       })
     }else{
@@ -88,42 +77,38 @@ const PostForm = () => {
     }
   }
   
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    const { title, meta, tags, author } = myForm; //이 값들은 useState에서 들어온 값이므로 새로 FormData로 만들어서 보내줘야 한다. -> 105번째 줄
-    if(!title.trim()) return titleRef.current.focus();
-    if(!tags.trim()) return tagRef.current.focus();
-    if(!meta.trim()) return metaRef.current.focus();
+  // const handleFormSubmit = (e) => {
+  //   e.preventDefault();
+  //   const { title, meta, tags, author } = myForm; //이 값들은 useState에서 들어온 값이므로 새로 FormData로 만들어서 보내줘야 한다. -> 105번째 줄
+  //   if(!title.trim()) return titleRef.current.focus();
+  //   if(!tags.trim()) return tagRef.current.focus();
+  //   if(!meta.trim()) return metaRef.current.focus();
 
-    const arrTags = myForm.tags.split(', ');
-    const slug = title.replace(/[^a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣 ]/g, ' ')
-                .split(" ")
-                .filter(item => item.trim())
-                .join('-'); //slug 자동 제작됨
-    const content = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+  //   const arrTags = myForm.tags.split(', ');
+  //   const slug = title.replace(/[^a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣 ]/g, ' ')
+  //               .split(" ")
+  //               .filter(item => item.trim())
+  //               .join('-'); //slug 자동 제작됨
+  //   const content = draftToHtml(convertToRaw(editorState.getCurrentContent()));
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-    formData.append('meta', meta);
-    formData.append('tags', arrTags);
-    formData.append('slug', slug);
-    formData.append('featured', featured);
-    formData.append('author', author);
-    const config = {
-      headers:{
-        'content-type':'multipart/form-data'
-      }
-    }
-  }
+  //   const formData = new FormData();
+  //   formData.append('title', title);
+  //   formData.append('content', content);
+  //   formData.append('meta', meta);
+  //   formData.append('tags', arrTags);
+  //   formData.append('slug', slug);
+  //   formData.append('featured', featured);
+  //   formData.append('author', author);
+  //   const config = {
+  //     headers:{
+  //       'content-type':'multipart/form-data'
+  //     }
+  //   }
+  // }
 
-  const onEditorStateChange = (editorState) => {
-    setEditorState(editorState)
-  }
-  // console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
 
   return (
-    <MyStyle onSubmit={handleFormSubmit}>
+    <MyStyle>
       <div className='flex items-center justify-between px-5'>
         <h1 className='text-xl font-semibold'>
           새 포스트 작성
@@ -141,9 +126,7 @@ const PostForm = () => {
       </div>
 
       <div className='px-5'> {/* featured checkbox */}
-        <input type='checkbox' id='featured' hidden
-               defaultChecked={featured} 
-               onChange={handleFeatured} />
+        <input type='checkbox' name='featured' id='featured' hidden />
         <label htmlFor='featured' className='flex items-center space-x-2 cursor-pointer group'>
           <div className='w-4 h-4 rounded-full border-2 flex items-center justify-center border-black'>
             {
@@ -169,40 +152,58 @@ const PostForm = () => {
                      className='border border-gray-800 rounded-md w-full my-1 p-1'
                      id='title' 
                      ref={titleRef}
-                     value={myForm.title}
-                     onChange={handleMyForm} />
+                     onChange={handleChange} />
             </li>
-            <li> {/* content */}
-              <Editor
-                toolbarClassName="toolbarClassName"
-                wrapperClassName="wrapper-class"
-                editorClassName="editor-class"
-                editorState={editorState}
-                onEditorStateChange={onEditorStateChange}
-              />
-              {/* <textarea rows='20' name='content' className='border border-gray-800 rounded-md w-full mb-1 p-1 resize-none' id='content'></textarea> */}
+            <li className='relative'> {/* content */}
+              <textarea 
+                  rows='20' 
+                  name='content' 
+                  id='content' 
+                  placeholder='## Markdown'
+                  className='border border-gray-800 rounded-md w-full mb-1 p-1 resize-none'  />
+              {/* markdown */}
+              <div className='border border-dashed border-black rounded absolute bg-white bottom-0 left-0 -translate-x-full mb-3 overflow-hidden'>
+                { 
+                  mdRules.map(({title,rule})=>{
+                      return (
+                          <li key={title} className='p-2 list-none'>
+                              <p className='font-semibold text-gray-500'>{title}</p>
+                              <p className='font-semibold text-gray-700 pl-2 font-mono text-sm'>{rule}</p>
+                          </li>
+                      )
+                  })
+                }
+              </div>
             </li>
             <li> {/* image */}
-              {/* <div className='flex'>
-                <label htmlFor='image-input' className='flex items-center spacex-x-2 px-3 ring-1 ring-black rounded h-10  hover:text-white hover:bg-black transition'>
-                  <span>이미지 등록</span>
-                  <ImFilePicture />
-                </label> */}
-                <input type='file' name='thumbnail' multiple={true}
-                       className='border border-gray-800 rounded-md w-full my-1 p-1 bg-white text-gray-400' 
-                       id='image-input'
-                       file={myForm.file}
-                       value={myForm.filename}
-                       onChange={handleFile}  />
-              {/* </div>               */}
+              <div className='flex border border-gray-800 rounded-md w-full my-1 p-1 bg-white text-gray-400'>
+                <label htmlFor='thumbnail' className='flex flex-col justify-center items-start'>
+                  <span className='pt-1 px-3 rounded text-white bg-black hover:text-black hover:bg-white hover:ring-1 hover:ring-black transition cursor-pointer'>이미지 업로드</span>
+                  <div>
+                    {
+                        selectedThumbUrl 
+                        ? <img src={selectedThumbUrl} 
+                               alt='thumbnail'
+                               className='shadow-sm mt-1 max-h-40 border border-dashed border-gray-500 rounded overflow-hidden' /> 
+                        : ''
+                    }
+                  </div>
+                    
+                </label>
+                <input type='file' name='thumbnail'
+                       id='thumbnail'
+                       onChange={handleChange}
+                       hidden
+                />
+              </div>              
             </li>
             <li> {/* tags */}
               <input type='text' name='tags' placeholder='태그' 
                      className='border border-gray-800 rounded-md w-full my-1 p-1' 
                      id='tags'
                      ref={tagRef}
-                     value={myForm.tags}
-                     onChange={handleMyForm}
+                     value={tags}
+                     onChange={handleChange}
                      onKeyDown={enterComma} />
             </li>
             <li> {/* meta description */}
@@ -210,16 +211,16 @@ const PostForm = () => {
                         className='border border-gray-800 rounded-md w-full my-1 p-1 resize-none' 
                         id='meta'
                         ref={metaRef}
-                        onChange={handleMyForm}
-                        value={myForm.meta} />
+                        onChange={handleChange}
+                        value={meta} />
               {/* <input type='text' name='meta' placeholder='meta' className='border border-gray-800 rounded-md w-full my-1 p-1' id='meta description' /> */}
             </li>
-
           </ul>
 
+
           <div className='flex flex-row justify-center items-center my-7'>
-            <button type='submit' className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black'>등록</button>
-            <button className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black'>취소</button>
+            <button type='submit' className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black transition'>등록</button>
+            <button className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black transition'>취소</button>
           </div>
       </div>
     </MyStyle>
