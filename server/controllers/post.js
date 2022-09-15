@@ -263,3 +263,18 @@ exports.getRelatedPosts = async (req, res) => {
         }))
     });
 }
+
+exports.uploadImage = async (req, res) => {
+    const {file} = req;
+    if(!file) return res.status(401).json({error:'파일이 존재하지 않습니다.'});
+
+    let thumbnail = { filename: '', originalname: ''}
+    if(req.file){
+        thumbnail = {
+          filename: req.file.filename,
+          originalname: req.file.originalname
+       }
+    }  
+
+    res.status(201).json({image: thumbnail});
+}
