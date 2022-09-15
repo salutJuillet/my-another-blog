@@ -13,7 +13,7 @@ const mdRules = [
 const defaultPost = {
     title:'',
     thumbnail:'',
-    featured:'',
+    featured: false,
     content:'',
     tags:'',
     meta:''
@@ -28,8 +28,15 @@ const PostForm = () => {
   const { updateValidation } = useValidation();
 
   const {title, content, featured, tags, meta} = postInfo;
+
+  /* 이미지 주소 복사해서 markdown rule 적용하고 복사 */
+  const imageCopy = () => {
+    const rulesTextCopy = `![이미지 설명을 입력하세요.](${imageUrlCopy})`;
+    navigator.clipboard.writeText(rulesTextCopy);
+  }
+
   const handleChange = ({target}) => {
-    const {value, name} = target;
+    const {value, name, checked} = target;
 
     if(name === 'thumbnail'){
         const file = target.files[0];
@@ -40,13 +47,35 @@ const PostForm = () => {
         return setSelectedThumbUrl(URL.createObjectURL(file));
     }
 
+    if(name === 'featured'){
+        return setPostInfo({...postInfo, [name]: checked});
+    }
+
+    if(name === 'tags'){
+        const newTags = tags;
+        console.log(newTags);
+        // if(tags.length > 10) {
+        //     updateValidation('warning', '태그는 10자 이하로만 작성해주세요.');
+        // }
+        if(newTags.length > 5) {
+            updateValidation('warning', '태그는 4개까지만 등록이 가능합니다.');
+        }
+        return setPostInfo({...postInfo, tags: newTags});
+    }
+
+    if(name === 'meta' && meta.length > 100) {
+        return setPostInfo({...postInfo, meta: value.substring(0,100)});
+        //meta가 100자를 초과하면 잘라버리기
+    }
+
+    if(name === 'title'){
+        const slug = value.replace(' ', '-');
+        return setPostInfo({...postInfo, title: value, slug});
+    }
+
     setPostInfo({...postInfo, [name]:value});
   }
 
-  const imageCopy = () => {
-    const rulesTextCopy = `![이미지 설명을 입력하세요.](${imageUrlCopy})`;
-    navigator.clipboard.writeText(rulesTextCopy);
-  }
 
   return (
     <form className='p-2 flex'>
@@ -70,11 +99,20 @@ const PostForm = () => {
             </div>
 
             {/* featured checkbox */}
-            <div>
-                <input type="checkbox" name='featured' id="featured" hidden />
+            <div className='flex'>
+                <input 
+                    type="checkbox"
+                    onChange={handleChange}
+                    name='featured' 
+                    id="featured" 
+                    hidden 
+                />
                 <label htmlFor="featured" className="flex items-center space-x-2 text-gray-700 cursor-pointer group">
                     <div className="w-4 h-4 rounded-full border-2 border-gray-700 flex items-center justify-center group-hover:border-blue-500">
-                        <div className="w-2 h-2 rounded-full bg-gray-700 group-hover:bg-blue-500" />
+                        {
+                            featured &&
+                            <div className="w-2 h-2 rounded-full bg-gray-700 group-hover:bg-blue-500" />
+                        }
                     </div>
                     <span className='group-hover:text-blue-500'>featured</span>
                 </label>
@@ -113,7 +151,10 @@ const PostForm = () => {
             {/* textarea input */}
             <textarea 
                 className="resize-none outline-none focus:ring-1 rounded p-2 w-full  flex-1 font-mono tracking-wide text-lg"
-                placeholder='## Markdown'    
+                placeholder='## Markdown' 
+                name='content'   
+                onChange={handleChange}
+                value={content}
             />
 
             {/* tags input */}
@@ -140,7 +181,7 @@ const PostForm = () => {
                     onChange={handleChange}
                     className="resize-none outline-none focus:ring-1 rounded p-2 w-full h-28"
                     placeholder='## Markdown'    
-                >{meta}</textarea>
+                />
             </div>        
         </div>
 
@@ -158,8 +199,9 @@ const PostForm = () => {
                 <label htmlFor="thumbnail" className='cursor-pointer'>
                     {
                         selectedThumbUrl 
-                        ? <img src={selectedThumbUrl} className='aspect-video shadow-sm' alt='thumbnail' /> 
-                        : (
+                        ? (
+                            <img src={selectedThumbUrl} className='aspect-video shadow-sm' alt='thumbnail' /> 
+                        ) : (
                             <div className="border border-dashed border-gray-500 aspect-video flex flex-col justify-center items-center bg-white">
                                 <span>이미지 선택</span>
                                 <span className='text-xs'>권장 사이즈</span>

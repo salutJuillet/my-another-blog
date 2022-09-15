@@ -33,15 +33,15 @@ export default function ValidationProvider({children}){
     setValidation({type, value});
     timeoutId = setTimeout(()=>{
         setValidation({type:'', value:''});
-    }, 3000);
+    }, 2500);
   }
 
   useEffect(()=>{
     validationRef.current?.classList.remove('bottom-1', 'opacity-0')
     validationRef.current?.classList.add('bottom-16', 'opacity-1')
     return ()=>{ //3초 지나면 다시 사라지도록
-        validationRef.current?.classList.add('bottom-1', 'opacity-0')
-        validationRef.current?.classList.remove('bottom-16', 'opacity-1')
+        validationRef.current?.classList.add('bottom-16', 'opacity-1')
+        validationRef.current?.classList.remove('bottom-1', 'opacity-0')
     }
   }, [validation.value]);
 
@@ -54,7 +54,7 @@ export default function ValidationProvider({children}){
             validation.value 
             ? <p 
                 ref={validationRef}
-                className={backgroundColor + ' rounded-full px-4 py-2 text-white fixed bottom-16 left-1/2 translate-x-1/2 opacity-0 transition-bottom duration-300 ease-linear'}>
+                className={backgroundColor + ' rounded-full px-4 py-2 text-white fixed bottom-16 left-1/2 -translate-x-1/2 opacity-0 transition-bottom duration-300 ease-linear'}>
                     {validation.value}
                </p> 
             : null
