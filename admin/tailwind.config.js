@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       transitionProperty: {
         'width': 'width',
+        'bottom': 'bottom',
       }
     },
     maxWidth: {

@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import { ImSpinner11, ImEye, ImFilePicture, ImFileEmpty } from 'react-icons/im'
+import { useValidation } from '../context/ValidationProvider'
 
 
 const mdRules = [
@@ -24,6 +25,8 @@ const PostForm = () => {
   const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
   const [imageUrlCopy, setImageUrlCopy] = useState('');
 
+  const { updateValidation } = useValidation();
+
   const {title, content, featured, tags, meta} = postInfo;
   const handleChange = ({target}) => {
     const {value, name} = target;
@@ -31,7 +34,7 @@ const PostForm = () => {
     if(name === 'thumbnail'){
         const file = target.files[0];
         if(!file.type?.includes('image')){
-            return updateValidation('에러', '이미지만 업로드 가능합니다.');
+            return updateValidation('warning', '이미지만 업로드 가능합니다.');
         }
         setPostInfo({...postInfo, thumbnail:value});
         return setSelectedThumbUrl(URL.createObjectURL(file));
@@ -157,7 +160,7 @@ const PostForm = () => {
                         selectedThumbUrl 
                         ? <img src={selectedThumbUrl} className='aspect-video shadow-sm' alt='thumbnail' /> 
                         : (
-                            <div className="border border-dashed border-gray-500 aspect-video flex flex-col justify-center items-center">
+                            <div className="border border-dashed border-gray-500 aspect-video flex flex-col justify-center items-center bg-white">
                                 <span>이미지 선택</span>
                                 <span className='text-xs'>권장 사이즈</span>
                                 <span className='text-xs'>1280 x 720</span>
