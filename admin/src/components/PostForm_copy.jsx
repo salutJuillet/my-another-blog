@@ -22,6 +22,7 @@ const PostForm = () => {
 
   const [postInfo, setPostInfo] = useState(defaultPost);
   const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
+  const [imageUrlCopy, setImageUrlCopy] = useState('');
 
   const {title, content, featured, tags, meta} = postInfo;
   const handleChange = ({target}) => {
@@ -30,13 +31,18 @@ const PostForm = () => {
     if(name === 'thumbnail'){
         const file = target.files[0];
         if(!file.type?.includes('image')){
-            return alert('이미지만 업로드 가능합니다.');
+            return updateValidation('에러', '이미지만 업로드 가능합니다.');
         }
         setPostInfo({...postInfo, thumbnail:value});
         return setSelectedThumbUrl(URL.createObjectURL(file));
     }
 
     setPostInfo({...postInfo, [name]:value});
+  }
+
+  const imageCopy = () => {
+    const rulesTextCopy = `![이미지 설명을 입력하세요.](${imageUrlCopy})`;
+    navigator.clipboard.writeText(rulesTextCopy);
   }
 
   return (
@@ -87,8 +93,14 @@ const PostForm = () => {
                     <span>Place an image</span>
                 </div>
                 <div className="flex flex-1 justify-between bg-gray-400 rounded overflow-hidden h-10">
-                    <input type="text" className='bg-transparent px-2 text-white w-full' />
-                    <button className="text-xs flex flex-col items-center justify-center p-2 self-stretch bg-gray-700 text-white">
+                    <input 
+                        type="text" 
+                        value={imageUrlCopy}
+                        onChange={(e)=>setImageUrlCopy(e.target.value)}
+                        className='bg-transparent px-2 text-white w-full' />
+                    <button 
+                        className="text-xs flex flex-col items-center justify-center p-2 self-stretch bg-gray-700 text-white"
+                        onClick={imageCopy}>
                         <ImFileEmpty />
                         <span>copy</span>
                     </button>

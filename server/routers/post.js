@@ -7,7 +7,8 @@ const {
     getPosts, 
     getFeaturedPosts,
     searchPost,
-    getRelatedPosts  } = require('../controllers/post');
+    getRelatedPosts,
+    uploadImage } = require('../controllers/post');
 const { parseData } = require('../middlewares');
 const multer = require('../middlewares/multer');
 const { postValidator, validate } = require('../middlewares/postValidator');
@@ -33,10 +34,14 @@ router.put(
 )
 //삭제
 router.delete('/:postId', deletePost);
+
 router.get('/single/:slug', getPost);
 router.get('/featured-posts', getFeaturedPosts);
 router.get('/posts', getPosts);
 router.get('/search', searchPost);
 router.get('/related-posts/:postId', getRelatedPosts);
+
+//이미지 업로드
+router.post('/upload-image', multer.single('thumbnail'), uploadImage);
 
 module.exports = router
