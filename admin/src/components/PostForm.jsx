@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {ImSpinner11, ImEye, ImFilePicture, ImFileEmpty } from 'react-icons/im'
+import {ImSpinner11, ImEye } from 'react-icons/im'
 import styled from 'styled-components'
-import post from '../api/post'
+import { useValidation } from '../context/ValidationProvider'
 
 
 const MyStyle = styled.form`
@@ -45,17 +45,52 @@ const PostForm = () => {
   });
   const {title, content, featured, tags, meta} = postInfo;
   const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
+  const [imageUrlCopy, setImageUrlCopy] = useState('');
+
+  const { updateValidation } = useValidation();
+
+  /* 이미지 주소 복사해서 markdown rule 적용하고 복사 */
+  const imageCopy = () => {
+    const rulesTextCopy = `![이미지 설명을 입력하세요.](${imageUrlCopy})`;
+    navigator.clipboard.writeText(rulesTextCopy);
+  }
 
   const handleChange = ({target}) => {
-    const {value, name} = target;
+    const {value, name, checked} = target;
 
     if(name === 'thumbnail'){
         const file = target.files[0];
         if(!file.type?.includes('image')){
-            return alert('이미지만 업로드 가능합니다.');
+          return updateValidation('warning', '이미지만 업로드 가능합니다.');
         }
         setPostInfo({...postInfo, thumbnail:value});
         return setSelectedThumbUrl(URL.createObjectURL(file));
+    }
+
+    if(name === 'featured'){
+        return setPostInfo({...postInfo, [name]: checked});
+    }
+
+    if(name === 'tags'){
+        const newTags = tags;
+        console.log(newTags);
+        // if(tags.length > 10) {
+        //     updateValidation('warning', '태그는 10자 이하로만 작성해주세요.');
+        // }
+        if(newTags.length > 5) {
+            updateValidation('warning', '태그는 4개까지만 등록이 가능합니다.');
+        }
+        return setPostInfo({...postInfo, tags: newTags});
+    }
+
+    if(name === 'meta' && meta.length > 100) {
+        return setPostInfo({...postInfo, meta: value.substring(0,100)});
+        //meta가 100자를 초과하면 잘라버리기
+    }
+
+    if(name === 'title'){
+        const slug = value.replace(' ', '-');
+        return setPostInfo({...postInfo, title: value, slug});
     }
 
     setPostInfo({...postInfo, [name]:value});
@@ -126,17 +161,13 @@ const PostForm = () => {
       </div>
 
       <div className='px-5'> {/* featured checkbox */}
-        <input type='checkbox' name='featured' id='featured' hidden />
+        <input type='checkbox' onChange={handleChange} name='featured' id='featured' hidden />
         <label htmlFor='featured' className='flex items-center space-x-2 cursor-pointer group'>
           <div className='w-4 h-4 rounded-full border-2 flex items-center justify-center border-black'>
             {
-              featured ? (
+              featured &&
                 <div className='w-2 h-2 rounded-full bg-black' />
-              ) : (
-                <div className='w-2 h-2 rounded-full bg-transparent' />
-              )
             }
-            
           </div>
           <div className='hover:bg-transparent ring-black transition relative'>
             최근글로 등록
@@ -147,36 +178,48 @@ const PostForm = () => {
       
       <div className='px-5 bg-black rounded-full py-5 mt-2'>
           <ul className='mt-12'>
-            <li> {/* title */}
+            {/* title */}
+            <li> 
               <input type='text' name='title' placeholder='제목'
-                     className='border border-gray-800 rounded-md w-full my-1 p-1'
+                     className='border border-gray-800 rounded-md w-full p-1'
                      id='title' 
                      ref={titleRef}
                      onChange={handleChange} />
             </li>
-            <li className='relative'> {/* content */}
+            
+            {/* content */}
+            <li className='flex relative'> 
               <textarea 
                   rows='20' 
                   name='content' 
+                  value={content}
+                  onChange={handleChange}
                   id='content' 
                   placeholder='## Markdown'
-                  className='border border-gray-800 rounded-md w-full mb-1 p-1 resize-none'  />
+                  className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none'  />
               {/* markdown */}
-              <div className='border border-dashed border-black rounded absolute bg-white bottom-0 left-0 -translate-x-full mb-3 overflow-hidden'>
-                { 
-                  mdRules.map(({title,rule})=>{
-                      return (
-                          <li key={title} className='p-2 list-none'>
-                              <p className='font-semibold text-gray-500'>{title}</p>
-                              <p className='font-semibold text-gray-700 pl-2 font-mono text-sm'>{rule}</p>
-                          </li>
-                      )
-                  })
-                }
-              </div>
+              {/* {
+                 && ( */}
+                  <div className='border border-dashed border-black rounded absolute bg-white bottom-0 -left-2 -translate-x-full mb-1 overflow-hidden'>
+                    { 
+                      mdRules.map(({title,rule})=>{
+                          return (
+                              <div key={title} className='p-2 list-none'>
+                                  <p className='font-semibold text-gray-500'>{title}</p>
+                                  <p className='font-semibold text-gray-700 pl-2 font-mono text-sm'>{rule}</p>
+                              </div>
+                          )
+                      })
+                    }
+                  </div>
+                {/* )
+              } */}
+              
             </li>
-            <li> {/* image */}
-              <div className='flex border border-gray-800 rounded-md w-full my-1 p-1 bg-white text-gray-400'>
+
+            {/* image */}
+            <li> 
+              <div className='flex border border-gray-800 rounded-md w-full mt-1 p-1 bg-white text-gray-400'>
                 <label htmlFor='thumbnail' className='flex flex-col justify-center items-start'>
                   <span className='pt-1 px-3 rounded text-white bg-black hover:text-black hover:bg-white hover:ring-1 hover:ring-black transition cursor-pointer'>이미지 업로드</span>
                   <div>
@@ -197,18 +240,22 @@ const PostForm = () => {
                 />
               </div>              
             </li>
-            <li> {/* tags */}
+
+            {/* tags */}
+            <li> 
               <input type='text' name='tags' placeholder='태그' 
-                     className='border border-gray-800 rounded-md w-full my-1 p-1' 
+                     className='border border-gray-800 rounded-md w-full mt-1 p-1' 
                      id='tags'
                      ref={tagRef}
                      value={tags}
                      onChange={handleChange}
                      onKeyDown={enterComma} />
             </li>
-            <li> {/* meta description */}
+
+            {/* meta description */}
+            <li> 
               <textarea rows='2' name='meta' placeholder='간단한 설명' 
-                        className='border border-gray-800 rounded-md w-full my-1 p-1 resize-none' 
+                        className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none' 
                         id='meta'
                         ref={metaRef}
                         onChange={handleChange}
