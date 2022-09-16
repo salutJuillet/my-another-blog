@@ -1,5 +1,5 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {ImSpinner11, ImEye } from 'react-icons/im'
+import React, {useState, useEffect} from 'react'
+import {ImSpinner11, ImEye, ImFileEmpty } from 'react-icons/im'
 import styled from 'styled-components'
 import { useValidation } from '../context/ValidationProvider'
 
@@ -33,21 +33,28 @@ const mdRules = [
   {title: 'Blockquote', rule:'> Your Quote'}
 ]
 
-const PostForm = () => {
-  const [postInfo, setPostInfo] = useState({
-    title:'',
-    thumbnail:'',
-    featured:false,
-    content:'',
-    tags:[],
-    meta:'',
-    author:'juillet'
-  });
-  const {title, content, featured, tags, meta} = postInfo;
+export const defaultPost = {
+  title:'',
+  thumbnail:'',
+  featured: false,
+  content:'',
+  tags:'',
+  meta:''
+}
+
+const PostForm = ({onSubmit, initialPost}) => {
+
+  const [postInfo, setPostInfo] = useState(defaultPost);
   const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
   const [imageUrlCopy, setImageUrlCopy] = useState('');
 
   const { updateValidation } = useValidation();
+
+  useEffect(()=>{
+    setPostInfo(initialPost); //수정본이 담긴다.
+  }, [initialPost]);
+
+  const {title, content, featured, tags, meta} = postInfo;
 
   /* 이미지 주소 복사해서 markdown rule 적용하고 복사 */
   const imageCopy = () => {
@@ -71,79 +78,57 @@ const PostForm = () => {
         return setPostInfo({...postInfo, [name]: checked});
     }
 
-    if(name === 'tags'){
-        const newTags = tags;
-        console.log(newTags);
-        // if(tags.length > 10) {
-        //     updateValidation('warning', '태그는 10자 이하로만 작성해주세요.');
-        // }
-        if(newTags.length > 5) {
-            updateValidation('warning', '태그는 4개까지만 등록이 가능합니다.');
-        }
-        return setPostInfo({...postInfo, tags: newTags});
-    }
-
     if(name === 'meta' && meta.length > 100) {
         return setPostInfo({...postInfo, meta: value.substring(0,100)});
         //meta가 100자를 초과하면 잘라버리기
     }
 
-    if(name === 'title'){
-        const slug = value.replace(' ', '-');
-        return setPostInfo({...postInfo, title: value, slug});
-    }
-
     setPostInfo({...postInfo, [name]:value});
   }
 
-  const titleRef = useRef();
-  const metaRef = useRef();
-  const tagRef = useRef();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { title, content, tags, meta } = postInfo;
 
-  const enterComma = (e) => {
-    const {value} = e.target;
-    if(e.keyCode === 32){ //태그 작성 시 스페이스바를 눌렀을 때 자동으로 ,가 생성됨
-      setPostInfo({
-        ...postInfo,
-        tags: value + ','
-      })
-    }else{
-      return false;
+    if(!title.trim()) return updateValidation('error', '제목을 입력해주세요.');
+    if(!content.trim()) return updateValidation('error', '내용을 입력해주세요.');
+    // if(!tags.trim()) return updateValidation('error', '태그를 입력해주세요.');
+    // if(!meta.trim()) return updateValidation('error', '간단한 설명을 입력해주세요.');
+
+    const newTags = tags.split(',')
+                        .map((item)=>item.trim())
+                        .splice(0,4);
+
+    const slug = title.toLocaleLowerCase()
+                      .replace(/[^a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9]/g, ' ')
+                      .split(' ')
+                      .filter((item)=>item.trim())
+                      .join('-');
+        
+    const formData = new FormData();
+    const finalPost = {...postInfo, tags: JSON.stringify(newTags), slug};
+    for(let key in finalPost){
+        formData.append(key, finalPost[key]);
     }
+    onSubmit(formData);
   }
-  
-  // const handleFormSubmit = (e) => {
-  //   e.preventDefault();
-  //   const { title, meta, tags, author } = myForm; //이 값들은 useState에서 들어온 값이므로 새로 FormData로 만들어서 보내줘야 한다. -> 105번째 줄
-  //   if(!title.trim()) return titleRef.current.focus();
-  //   if(!tags.trim()) return tagRef.current.focus();
-  //   if(!meta.trim()) return metaRef.current.focus();
 
-  //   const arrTags = myForm.tags.split(', ');
-  //   const slug = title.replace(/[^a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣 ]/g, ' ')
-  //               .split(" ")
-  //               .filter(item => item.trim())
-  //               .join('-'); //slug 자동 제작됨
-  //   const content = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-
-  //   const formData = new FormData();
-  //   formData.append('title', title);
-  //   formData.append('content', content);
-  //   formData.append('meta', meta);
-  //   formData.append('tags', arrTags);
-  //   formData.append('slug', slug);
-  //   formData.append('featured', featured);
-  //   formData.append('author', author);
-  //   const config = {
-  //     headers:{
-  //       'content-type':'multipart/form-data'
-  //     }
+  /* 스페이스바를 누르면 자동으로 ,와 공백이 생성됨 (태그 작성) */
+  // const enterComma = (e) => {
+  //   const {value} = e.target;
+  //   if(e.keyCode === 32){
+  //     setPostInfo({
+  //       ...postInfo,
+  //       tags: value + ','
+  //     })
+  //   }else{
+  //     return false;
   //   }
   // }
-
-
+  
+  
   return (
-    <MyStyle>
+    <form onSubmit={handleSubmit}>
       <div className='flex items-center justify-between px-5'>
         <h1 className='text-xl font-semibold'>
           새 포스트 작성
@@ -156,11 +141,12 @@ const PostForm = () => {
             <ImEye />
             <span style={{marginTop:-3, fontSize:'0.7rem'}}>View</span>
           </button>
-          <button className='flex w-36 items-center space-x-2 px-3 ring-1 ring-black rounded h-10 text-white bg-black hover:text-black hover:bg-white transition justify-center'>Post</button>
+          <button type='submit' className='flex w-36 items-center space-x-2 px-3 ring-1 ring-black rounded h-10 text-white bg-black hover:text-black hover:bg-white transition justify-center'>Post</button>
         </div>
       </div>
 
-      <div className='px-5'> {/* featured checkbox */}
+      {/* featured checkbox */}
+      <div className='px-5'> 
         <input type='checkbox' onChange={handleChange} name='featured' id='featured' hidden />
         <label htmlFor='featured' className='flex items-center space-x-2 cursor-pointer group'>
           <div className='w-4 h-4 rounded-full border-2 flex items-center justify-center border-black'>
@@ -178,16 +164,15 @@ const PostForm = () => {
       
       <div className='px-5 bg-black rounded-full py-5 mt-2'>
           <ul className='mt-12'>
-            {/* title */}
+            {/* title input */}
             <li> 
               <input type='text' name='title' placeholder='제목'
                      className='border border-gray-800 rounded-md w-full p-1'
                      id='title' 
-                     ref={titleRef}
                      onChange={handleChange} />
             </li>
             
-            {/* content */}
+            {/* content textarea */}
             <li className='flex relative'> 
               <textarea 
                   rows='20' 
@@ -197,10 +182,12 @@ const PostForm = () => {
                   id='content' 
                   placeholder='## Markdown'
                   className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none'  />
+
               {/* markdown */}
               {/* {
                  && ( */}
-                  <div className='border border-dashed border-black rounded absolute bg-white bottom-0 -left-2 -translate-x-full mb-1 overflow-hidden'>
+                  <div className='border border-dashed border-black rounded absolute bg-white bottom-0 -left-2 -translate-x-full overflow-hidden'>
+                    <h1 className='text-center mt-2 font-semibold text-gray-800'>General Markdown Rules</h1>
                     { 
                       mdRules.map(({title,rule})=>{
                           return (
@@ -211,34 +198,58 @@ const PostForm = () => {
                           )
                       })
                     }
+                    <div className='text-center mt-3 mb-2'>
+                        <a href='https://www.markdownguide.org/basic-syntax/' target='_blank'>더보기</a>
+                    </div>
                   </div>
                 {/* )
               } */}
               
             </li>
 
-            {/* image */}
-            <li> 
-              <div className='flex border border-gray-800 rounded-md w-full mt-1 p-1 bg-white text-gray-400'>
-                <label htmlFor='thumbnail' className='flex flex-col justify-center items-start'>
-                  <span className='pt-1 px-3 rounded text-white bg-black hover:text-black hover:bg-white hover:ring-1 hover:ring-black transition cursor-pointer'>이미지 업로드</span>
-                  <div>
-                    {
-                        selectedThumbUrl 
-                        ? <img src={selectedThumbUrl} 
-                               alt='thumbnail'
-                               className='shadow-sm mt-1 max-h-40 border border-dashed border-gray-500 rounded overflow-hidden' /> 
-                        : ''
-                    }
-                  </div>
-                    
+            {/* thumbnail */}
+            <li className='p-0.5 mt-1'>
+              <div
+                className={selectedThumbUrl ? 'flex flex-row rounded-t-md border border-white overflow-hidden' : 'flex flex-row rounded-md border border-white overflow-hidden'}>
+                <label htmlFor='thumbnail' className='w-32 rounded-l text-white bg-black hover:text-black hover:bg-white hover:border hover:border-black transition cursor-pointer flex items-center justify-center pt-1'>
+                  <span>이미지 업로드</span>
                 </label>
+
+                <div 
+                  className='bg-white flex flex-row items-center w-full overflow-hidden'>
+                    <button 
+                        onClick={imageCopy}
+                        className='text-black py-0.5 px-1'
+                    >
+                      <span className='flex flex-col items-center justify-center'>
+                        <ImFileEmpty />
+                        <span className='text-xs h-3'>copy</span>
+                      </span>
+                    </button>
+                    <input
+                        type='text'
+                        value={imageUrlCopy}
+                        onChange={(e)=>setImageUrlCopy(e.target.value)}
+                        className='p-1 w-full h-8 rounded-md'
+                    />
+                </div>
+                
                 <input type='file' name='thumbnail'
                        id='thumbnail'
                        onChange={handleChange}
                        hidden
                 />
-              </div>              
+              </div>
+
+                {
+                    selectedThumbUrl 
+                    ? <div className='bg-white rounded-b-md p-1'>
+                        <img src={selectedThumbUrl} 
+                             alt='thumbnail'
+                             className='shadow-sm mt-1 max-h-40 border border-dashed border-gray-500 rounded overflow-hidden' />
+                      </div> 
+                    : ''
+                }
             </li>
 
             {/* tags */}
@@ -246,10 +257,9 @@ const PostForm = () => {
               <input type='text' name='tags' placeholder='태그' 
                      className='border border-gray-800 rounded-md w-full mt-1 p-1' 
                      id='tags'
-                     ref={tagRef}
                      value={tags}
                      onChange={handleChange}
-                     onKeyDown={enterComma} />
+               />
             </li>
 
             {/* meta description */}
@@ -257,10 +267,8 @@ const PostForm = () => {
               <textarea rows='2' name='meta' placeholder='간단한 설명' 
                         className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none' 
                         id='meta'
-                        ref={metaRef}
                         onChange={handleChange}
                         value={meta} />
-              {/* <input type='text' name='meta' placeholder='meta' className='border border-gray-800 rounded-md w-full my-1 p-1' id='meta description' /> */}
             </li>
           </ul>
 
@@ -270,7 +278,7 @@ const PostForm = () => {
             <button className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black transition'>취소</button>
           </div>
       </div>
-    </MyStyle>
+    </form>
   )
 }
 
