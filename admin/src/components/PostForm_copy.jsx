@@ -244,7 +244,7 @@ const PostForm = ({onSubmit, initialPost}) => {
                         })
                     }
                     <li className='text-center mt-3 mb-2'>
-                        <a href='https://www.markdownguide.org/basic-syntax/' target='_blacnk'>더보기</a>
+                        <a href='https://www.markdownguide.org/basic-syntax/' target='_blank'>더보기</a>
                     </li>
                 </ul>
             </div>
