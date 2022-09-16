@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { ImSpinner11, ImEye, ImFilePicture, ImFileEmpty } from 'react-icons/im'
 import { useValidation } from '../context/ValidationProvider'
 
@@ -10,7 +10,7 @@ const mdRules = [
     {title: 'Blockquote', rule:'> Your Quote'}
 ]
 
-const defaultPost = {
+export const defaultPost = {
     title:'',
     thumbnail:'',
     featured: false,
@@ -19,13 +19,17 @@ const defaultPost = {
     meta:''
 }
 
-const PostForm = () => {
+const PostForm = ({onSubmit, initialPost}) => {
 
   const [postInfo, setPostInfo] = useState(defaultPost);
   const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
   const [imageUrlCopy, setImageUrlCopy] = useState('');
 
   const { updateValidation } = useValidation();
+
+  useEffect(()=>{
+    setPostInfo(initialPost); //수정본이 담긴다.
+  }, [initialPost]);
 
   const {title, content, featured, tags, meta} = postInfo;
 
@@ -51,34 +55,46 @@ const PostForm = () => {
         return setPostInfo({...postInfo, [name]: checked});
     }
 
-    if(name === 'tags'){
-        const newTags = tags;
-        console.log(newTags);
-        // if(tags.length > 10) {
-        //     updateValidation('warning', '태그는 10자 이하로만 작성해주세요.');
-        // }
-        if(newTags.length > 5) {
-            updateValidation('warning', '태그는 4개까지만 등록이 가능합니다.');
-        }
-        return setPostInfo({...postInfo, tags: newTags});
-    }
-
     if(name === 'meta' && meta.length > 100) {
         return setPostInfo({...postInfo, meta: value.substring(0,100)});
         //meta가 100자를 초과하면 잘라버리기
     }
-
-    if(name === 'title'){
-        const slug = value.replace(' ', '-');
-        return setPostInfo({...postInfo, title: value, slug});
-    }
-
+    
     setPostInfo({...postInfo, [name]:value});
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { title, content, tags, meta } = postInfo;
+
+    if(!title.trim()) return updateValidation('error', '제목을 입력해주세요.');
+    if(!content.trim()) return updateValidation('error', '내용을 입력해주세요.');
+    // if(!tags.trim()) return updateValidation('error', '태그를 입력해주세요.');
+    // if(!meta.trim()) return updateValidation('error', '간단한 설명을 입력해주세요.');
+
+    const newTags = tags.split(',')
+                        .map((item)=>item.trim())
+                        .splice(0,4);
+
+    const slug = title.toLocaleLowerCase()
+                      .replace(/[^a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9]/g, ' ')
+                      .split(' ')
+                      .filter((item)=>item.trim())
+                      .join('-');
+        
+    const formData = new FormData();
+    const finalPost = {...postInfo, tags: JSON.stringify(newTags), slug};
+    for(let key in finalPost){
+        formData.append(key, finalPost[key]);
+    }
+    onSubmit(formData);
+  }
+    
+  
+
 
   return (
-    <form className='p-2 flex'>
+    <form onSubmit={handleSubmit} className='p-2 flex'>
         <div className="w-9/12 space-y-3 h-screen flex flex-col">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold text-gray-700">
@@ -94,7 +110,8 @@ const PostForm = () => {
                         <ImEye />
                         <span>view</span>
                     </button>
-                    <button className="h-10 w-36 px-5 hover:ring-1 bg-blue-500 rounded text-white hover:text-blue-500 hover:bg-transparent ring-blue-500 transition">Post</button>
+                    <button
+                        className="h-10 w-36 px-5 hover:ring-1 bg-blue-500 rounded text-white hover:text-blue-500 hover:bg-transparent ring-blue-500 transition">Post</button>
                 </div>
             </div>
 
@@ -150,7 +167,7 @@ const PostForm = () => {
 
             {/* textarea input */}
             <textarea 
-                className="resize-none outline-none focus:ring-1 rounded p-2 w-full  flex-1 font-mono tracking-wide text-lg"
+                className="resize-none outline-none focus:ring-1 rounded p-2 w-full flex-1 font-mono tracking-wide text-sm"
                 placeholder='## Markdown' 
                 name='content'   
                 onChange={handleChange}
