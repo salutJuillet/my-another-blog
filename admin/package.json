@@ -11,6 +11,7 @@
     "dateformat": "^5.0.3",
     "draft-js": "^0.11.7",
     "draft-to-html": "^0.0.1",
+    "markdown-to-jsx": "^7.1.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.15.0",
