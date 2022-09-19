@@ -2,36 +2,9 @@ import React, {useState, useEffect} from 'react'
 import {ImSpinner11, ImEye, ImFileEmpty } from 'react-icons/im'
 import styled from 'styled-components'
 import { useValidation } from '../context/ValidationProvider'
+import MarkdownHint from './MarkdownHint'
+import DeviceView from './DeviceView'
 
-
-const MyStyle = styled.form`
-  .wrapper-class{
-    box-sizing: border-box;
-    border:1px solid black;
-    border-radius:0.375rem;
-    width:100%;
-    height:600px;
-    margin:0.25rem 0;
-    /* padding:0.25rem;     */
-    background:white;
-    overflow: hidden;
-    :focus-within{
-      border-width:3px;
-      box-shadow:1px 1px white, -1px -1px white;
-    }
-  }
-  .editor-class{
-    height:calc(100% - 20px);
-    padding:0 5px;
-  }
-`
-
-const mdRules = [
-  {title: 'From h1 to h6', rule:'# Heading => ######'},
-  {title: 'Image', rule:'![alt 내용](http://이미지경로)'},
-  {title: 'Link', rule:'[Link 텍스트](http://링크경로)'},
-  {title: 'Blockquote', rule:'> Your Quote'}
-]
 
 export const defaultPost = {
   title:'',
@@ -42,17 +15,31 @@ export const defaultPost = {
   meta:''
 }
 
-const PostForm = ({onSubmit, initialPost}) => {
+const PostForm = ({
+    onSubmit, 
+    busy, 
+    initialPost, 
+    postBtnTitle,
+    resetAfterSubmit
+}) => {
 
   const [postInfo, setPostInfo] = useState(defaultPost);
   const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
   const [imageUrlCopy, setImageUrlCopy] = useState('');
+  const [displayMarkdownHint, setDisplayMarkdownHint] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const { updateValidation } = useValidation();
 
   useEffect(()=>{
-    setPostInfo(initialPost); //수정본이 담긴다.
-  }, [initialPost]);
+    if(initialPost.thumbnail){
+        setSelectedThumbUrl('/uploads/' + initialPost.thumbnail.filename);
+    }
+    setPostInfo({...initialPost}); //수정본이 담긴다.
+    return () => {
+        if(resetAfterSubmit) resetForm();
+    }
+  }, [initialPost, resetAfterSubmit]);
 
   const {title, content, featured, tags, meta} = postInfo;
 
@@ -70,7 +57,7 @@ const PostForm = ({onSubmit, initialPost}) => {
         if(!file.type?.includes('image')){
           return updateValidation('warning', '이미지만 업로드 가능합니다.');
         }
-        setPostInfo({...postInfo, thumbnail:value});
+        setPostInfo({...postInfo, thumbnail:file});
         return setSelectedThumbUrl(URL.createObjectURL(file));
     }
 
@@ -111,20 +98,13 @@ const PostForm = ({onSubmit, initialPost}) => {
         formData.append(key, finalPost[key]);
     }
     onSubmit(formData);
+    if(resetAfterSubmit) resetForm();
   }
-
-  /* 스페이스바를 누르면 자동으로 ,와 공백이 생성됨 (태그 작성) */
-  // const enterComma = (e) => {
-  //   const {value} = e.target;
-  //   if(e.keyCode === 32){
-  //     setPostInfo({
-  //       ...postInfo,
-  //       tags: value + ','
-  //     })
-  //   }else{
-  //     return false;
-  //   }
-  // }
+  
+  const resetForm = () => {
+    setPostInfo({...defaultPost});
+    localStorage.removeItem('blogPost');
+  } 
   
   
   return (
