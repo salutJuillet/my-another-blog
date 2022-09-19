@@ -20,7 +20,7 @@ const Navbar = ({closed}) => {
   return (
     <nav>
         <div className='flex justify-center mt-1'>
-            <img src="./logo_white.png" alt="juillet's blog" 
+            <img src="/logo_white.png" alt="juillet's blog" 
                  className={closed ? 'min-logo transition-width': 'logo transition-width'} />
         </div>
         <ul>
