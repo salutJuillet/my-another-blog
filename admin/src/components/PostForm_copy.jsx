@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { ImSpinner11, ImEye, ImFilePicture, ImFileEmpty } from 'react-icons/im'
+import { ImSpinner11, ImEye, ImFilePicture, ImFileEmpty, ImSpinner3 } from 'react-icons/im'
 import { useValidation } from '../context/ValidationProvider'
 import MarkdownHint from './MarkdownHint'
 
@@ -12,7 +12,7 @@ export const defaultPost = {
     meta:''
 }
 
-const PostForm = ({onSubmit, initialPost}) => {
+const PostForm = ({onSubmit, busy, initialPost}) => {
 
   const [postInfo, setPostInfo] = useState(defaultPost);
   const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
@@ -22,7 +22,7 @@ const PostForm = ({onSubmit, initialPost}) => {
   const { updateValidation } = useValidation();
 
   useEffect(()=>{
-    setPostInfo(initialPost); //수정본이 담긴다.
+    setPostInfo({...initialPost}); //수정본이 담긴다.
   }, [initialPost]);
 
   const {title, content, featured, tags, meta} = postInfo;
@@ -105,7 +105,9 @@ const PostForm = ({onSubmit, initialPost}) => {
                         <span>view</span>
                     </button>
                     <button
-                        className="h-10 w-36 px-5 hover:ring-1 bg-blue-500 rounded text-white hover:text-blue-500 hover:bg-transparent ring-blue-500 transition">Post</button>
+                        className="h-10 w-36 px-5 hover:ring-1 bg-blue-500 rounded text-white hover:text-blue-500 hover:bg-transparent ring-blue-500 transition">
+                            {busy ? <ImSpinner3 className='animate-spin mx-auto text-xl' /> : 'Post'}
+                        </button>
                 </div>
             </div>
 
