@@ -1,14 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { ImSpinner11, ImEye, ImFilePicture, ImFileEmpty } from 'react-icons/im'
 import { useValidation } from '../context/ValidationProvider'
-
-
-const mdRules = [
-    {title: 'From h1 to h6', rule:'# Heading => ######'},
-    {title: 'Image', rule:'![alt 내용](http://이미지경로)'},
-    {title: 'Link', rule:'[Link 텍스트](http://링크경로)'},
-    {title: 'Blockquote', rule:'> Your Quote'}
-]
+import MarkdownHint from './MarkdownHint'
 
 export const defaultPost = {
     title:'',
@@ -24,6 +17,7 @@ const PostForm = ({onSubmit, initialPost}) => {
   const [postInfo, setPostInfo] = useState(defaultPost);
   const [selectedThumbUrl, setSelectedThumbUrl] = useState('');
   const [imageUrlCopy, setImageUrlCopy] = useState('');
+  const [displayMarkdownHint, setDisplayMarkdownHint] = useState(false);
 
   const { updateValidation } = useValidation();
 
@@ -47,7 +41,7 @@ const PostForm = ({onSubmit, initialPost}) => {
         if(!file.type?.includes('image')){
             return updateValidation('warning', '이미지만 업로드 가능합니다.');
         }
-        setPostInfo({...postInfo, thumbnail:value});
+        setPostInfo({...postInfo, thumbnail:file});
         return setSelectedThumbUrl(URL.createObjectURL(file));
     }
 
@@ -139,6 +133,7 @@ const PostForm = ({onSubmit, initialPost}) => {
             <input 
                 type="text" 
                 name='title'
+                value={title}
                 onChange={handleChange}
                 className="text-xl outline-none focus:ring-1 rounded p-2 w-full font-semibold" 
                 placeholder='Post title'
@@ -172,6 +167,8 @@ const PostForm = ({onSubmit, initialPost}) => {
                 name='content'   
                 onChange={handleChange}
                 value={content}
+                onFocus={()=>setDisplayMarkdownHint(true)}
+                onBlur={()=>setDisplayMarkdownHint(false)}
             />
 
             {/* tags input */}
@@ -217,7 +214,7 @@ const PostForm = ({onSubmit, initialPost}) => {
                     {
                         selectedThumbUrl 
                         ? (
-                            <img src={selectedThumbUrl} className='aspect-video shadow-sm' alt='thumbnail' /> 
+                            <img src={selectedThumbUrl} className='aspect-video shadow-sm object-contain' alt='thumbnail' /> 
                         ) : (
                             <div className="border border-dashed border-gray-500 aspect-video flex flex-col justify-center items-center bg-white">
                                 <span>이미지 선택</span>
@@ -230,24 +227,9 @@ const PostForm = ({onSubmit, initialPost}) => {
             </div>
 
             {/* Markdown */}
-            <div className="bg-white absolute top-1/2 -translate-y-1/2 px-2 py-4 rounded">
-                <h1 className="font-semibold mt-2 mb-4 text-center">General markdown rules</h1>
-                <ul>
-                    {
-                        mdRules.map(({title,rule})=>{
-                            return (
-                                <li key={title} className='py-2'>
-                                    <p className='font-semibold text-gray-500'>{title}</p>
-                                    <p className='font-semibold text-gray-700 pl-2 font-mono text-sm'>{rule}</p>
-                                </li>
-                            )
-                        })
-                    }
-                    <li className='text-center mt-3 mb-2'>
-                        <a href='https://www.markdownguide.org/basic-syntax/' target='_blank'>더보기</a>
-                    </li>
-                </ul>
-            </div>
+            <div className="absolute top-1/2 -translate-y-1/2">
+               { displayMarkdownHint && <MarkdownHint /> }
+           </div>  
         </div>
     </form>
   )
