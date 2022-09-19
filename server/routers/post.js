@@ -32,6 +32,7 @@ router.put(
     validate,
     updatePost    
 )
+
 //삭제
 router.delete('/:postId', deletePost);
 
@@ -42,6 +43,6 @@ router.get('/search', searchPost);
 router.get('/related-posts/:postId', getRelatedPosts);
 
 //이미지 업로드
-router.post('/upload-image', multer.single('thumbnail'), uploadImage);
+// router.post('/upload-image', multer.single('thumbnail'), uploadImage);
 
 module.exports = router

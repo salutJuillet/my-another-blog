@@ -10,9 +10,12 @@ module.exports = {
         'bottom': 'bottom',
       }
     },
-    maxWidth: {
-      '1/2': '50%'
-    }
+    // width: {
+    //   'mobile-width': '360px'
+    // },
+    // height: {
+    //   'mobile-height': '640px'
+    // }
   },
   plugins: [],
 }
