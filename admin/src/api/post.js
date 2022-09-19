@@ -1,4 +1,3 @@
-import { createFactory } from 'react';
 import client from './client'
 
 /* 게시물 가져오기 */
@@ -42,10 +41,38 @@ export const searchPost = async (query) => {
         return {error: error.message || error}
     }
 }
-
+/* 작성 */
 export const createPost = async (formData) => {
     try{
         const {data} = await client.post('/post/create', formData);
+        return data;
+    }catch(error){
+        const {response} = error;
+        if(response?.data){
+            return response.data;
+        }
+        return {error: error.message || error}
+    }
+}
+
+/* 수정 */
+export const updatePost = async (postId, formData) => {
+    try{
+        const {data} = await client.put(`/post/${postId}`, formData);
+        return data;
+    }catch(error){
+        const {response} = error;
+        if(response?.data){
+            return response.data;
+        }
+        return {error: error.message || error}
+    }
+}
+
+/* 수정 시 기존 게시글 정보 가져오기 */
+export const getPost = async (slug) => {
+    try{
+        const {data} = await client(`/post/single/${slug}`);
         return data;
     }catch(error){
         const {response} = error;

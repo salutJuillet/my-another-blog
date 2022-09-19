@@ -9,6 +9,7 @@ const CreatePost = () => {
 
   const [postInfo, setPostInfo] = useState(defaultPost);
   const [busy, setBusy] = useState(false);
+  const [resetAfterSubmit, setResetAfterSubmit] = useState(false);
 
   const { updateValidation } = useValidation();
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const CreatePost = () => {
     const {error, post} = await createPost(data);
     setBusy(false);
     if(error) return updateValidation(error);
+
+    setResetAfterSubmit(true);
     navigate(`/update-post/${post.slug}`);
   }
 
@@ -30,7 +33,12 @@ const CreatePost = () => {
   }, [])
 
   return (
-    <PostForm onSubmit={handleSubmit} initialPost={postInfo} busy={busy} />
+    <PostForm 
+        onSubmit={handleSubmit} 
+        initialPost={postInfo} 
+        busy={busy}
+        postBtnTitle='Post'
+        resetAfterSubmit={resetAfterSubmit} />
   )
 }
 
