@@ -17,6 +17,7 @@ const PostForm = ({
     onSubmit, 
     busy, 
     initialPost, 
+    postTitle,
     postBtnTitle,
     resetAfterSubmit
 }) => {
@@ -111,11 +112,13 @@ const PostForm = ({
             <div className="w-9/12 space-y-3 h-screen flex flex-col">
                 <div className="flex items-center justify-between">
                     <h1 className="text-xl font-semibold text-gray-700">
-                        Create New Post
+                        {postTitle}
                     </h1>
 
                     <div className="flex items-center space-x-5">
-                        <button className='flex items-center px-3 ring-1 ring-blue-500 rounded h-10 hover:text-white hover:bg-blue-500'>
+                        <button 
+                            onClick={resetForm}
+                            className='flex items-center px-3 ring-1 ring-blue-500 rounded h-10 hover:text-white hover:bg-blue-500'>
                             <ImSpinner11 />
                             <span>reset</span>
                         </button>
