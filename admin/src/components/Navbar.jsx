@@ -34,15 +34,8 @@ const Navbar = ({closed}) => {
             <li>
                 <NavItem 
                     to='/create-post' 
-                    value='CreatePost' 
+                    value='New Post' 
                     Icon={closed?<AiFillFileAdd size={25} />:<AiFillFileAdd size={20} />} 
-                    closed={closed} />
-            </li>
-            <li>
-                <NavItem 
-                    to='/update-post' 
-                    value='UpdatePost' 
-                    Icon={closed?<AiFillEdit size={25} />:<AiFillEdit size={20} />} 
                     closed={closed} />
             </li>
         </ul>
