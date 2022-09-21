@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {ImSpinner11, ImEye, ImFileEmpty } from 'react-icons/im'
-import styled from 'styled-components'
+import {ImSpinner11, ImEye, ImFileEmpty, ImSpinner3 } from 'react-icons/im'
 import { useValidation } from '../context/ValidationProvider'
 import MarkdownHint from './MarkdownHint'
 import DeviceView from './DeviceView'
@@ -16,9 +15,11 @@ export const defaultPost = {
 }
 
 const PostForm = ({
+    closeNav,
     onSubmit, 
     busy, 
     initialPost, 
+    postTitle,
     postBtnTitle,
     resetAfterSubmit
 }) => {
@@ -103,162 +104,177 @@ const PostForm = ({
   
   const resetForm = () => {
     setPostInfo({...defaultPost});
+    setSelectedThumbUrl('');
     localStorage.removeItem('blogPost');
   } 
   
   
   return (
-    <form onSubmit={handleSubmit}>
-      <div className='flex items-center justify-between px-5'>
-        <h1 className='text-xl font-semibold'>
-          새 포스트 작성
-        </h1>
-        <div className='flex items-center space-x-2'>
-          <button className='flex items-center px-3 ring-1 ring-black rounded h-10 text-white bg-black hover:text-black hover:bg-white transition'>
-            <ImSpinner11 />
-          </button>
-          <button className='flex flex-col items-center px-3 ring-1 ring-black rounded h-10 text-white bg-black hover:text-black hover:bg-white transition justify-center'>
-            <ImEye />
-            <span style={{marginTop:-3, fontSize:'0.7rem'}}>View</span>
-          </button>
-          <button type='submit' className='flex w-36 items-center space-x-2 px-3 ring-1 ring-black rounded h-10 text-white bg-black hover:text-black hover:bg-white transition justify-center'>Post</button>
+    <>
+      <form onSubmit={handleSubmit}>
+        <div className='flex items-center justify-between px-5'>
+          <h1 className='text-xl font-semibold'>
+            {postTitle}
+          </h1>
+          <div className='flex items-center space-x-2'>
+            <button
+              onClick={resetForm} 
+              className='flex flex-col items-center px-3 ring-1 ring-black rounded h-10 text-white bg-black hover:text-black hover:bg-white transition justify-center pt-1'>
+              <ImSpinner11 size={14} />
+              <span style={{fontSize:'0.7rem'}}>reset</span>
+            </button>
+            <button 
+              onClick={()=>setVisible(true)}
+              className='flex flex-col items-center px-3 ring-1 ring-black rounded h-10 text-white bg-black hover:text-black hover:bg-white transition justify-center pt-1'>
+              <ImEye />
+              <span style={{fontSize:'0.7rem'}}>view</span>
+            </button>
+            <button 
+              type='submit' 
+              className='flex w-36 items-center space-x-2 px-3 ring-1 ring-black rounded h-10 text-white bg-black hover:text-black hover:bg-white transition justify-center'>
+                  { busy ? <ImSpinner3 className='animate-spin mx-auto text-lg' /> : postBtnTitle}
+              </button>
+          </div>
         </div>
-      </div>
 
-      {/* featured checkbox */}
-      <div className='px-5'> 
-        <input type='checkbox' onChange={handleChange} name='featured' id='featured' hidden />
-        <label htmlFor='featured' className='flex items-center space-x-2 cursor-pointer group'>
-          <div className='w-4 h-4 rounded-full border-2 flex items-center justify-center border-black'>
-            {
-              featured &&
-                <div className='w-2 h-2 rounded-full bg-black' />
-            }
-          </div>
-          <div className='hover:bg-transparent ring-black transition relative'>
-            최근글로 등록
-            <div className='hidden group-hover:block absolute bottom-0.5 bg-black' style={{width:87.125, height:2}} />
-          </div>
-        </label>
-      </div>
-      
-      <div className='px-5 bg-black rounded-full py-5 mt-2'>
-          <ul className='mt-12'>
-            {/* title input */}
-            <li> 
-              <input type='text' name='title' placeholder='제목'
-                     className='border border-gray-800 rounded-md w-full p-1'
-                     id='title' 
-                     onChange={handleChange} />
-            </li>
-            
-            {/* content textarea */}
-            <li className='flex relative'> 
-              <textarea 
-                  rows='20' 
-                  name='content' 
-                  value={content}
-                  onChange={handleChange}
-                  id='content' 
-                  placeholder='## Markdown'
-                  className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none'  />
-
-              {/* markdown */}
-              {/* {
-                 && ( */}
-                  <div className='border border-dashed border-black rounded absolute bg-white bottom-0 -left-2 -translate-x-full overflow-hidden'>
-                    <h1 className='text-center mt-2 font-semibold text-gray-800'>General Markdown Rules</h1>
-                    { 
-                      mdRules.map(({title,rule})=>{
-                          return (
-                              <div key={title} className='p-2 list-none'>
-                                  <p className='font-semibold text-gray-500'>{title}</p>
-                                  <p className='font-semibold text-gray-700 pl-2 font-mono text-sm'>{rule}</p>
-                              </div>
-                          )
-                      })
-                    }
-                    <div className='text-center mt-3 mb-2'>
-                        <a href='https://www.markdownguide.org/basic-syntax/' target='_blank'>더보기</a>
-                    </div>
-                  </div>
-                {/* )
-              } */}
+        {/* featured checkbox */}
+        <div className='px-5'> 
+          <input 
+              type='checkbox' 
+              onChange={handleChange} 
+              name='featured' 
+              id='featured' 
+              hidden 
+          />
+          <label htmlFor='featured' className='flex items-center space-x-2 cursor-pointer group'>
+            <div className='w-4 h-4 rounded-full border-2 flex items-center justify-center border-black'>
+              {
+                featured &&
+                  <div className='w-2 h-2 rounded-full bg-black' />
+              }
+            </div>
+            <div className='hover:bg-transparent ring-black transition relative'>
+              최근글로 등록
+              <div className='hidden group-hover:block absolute bottom-0.5 bg-black' style={{width:87.125, height:2}} />
+            </div>
+          </label>
+        </div>
+        
+        <div className='px-5 bg-black rounded-full py-5 mt-2'>
+            <ul className='mt-12'>
+              {/* title input */}
+              <li className='mb-1'> 
+                <input 
+                    type='text' 
+                    name='title' 
+                    value={title}
+                    placeholder='제목'
+                    className='border border-gray-800 rounded-md w-full p-1'
+                    id='title' 
+                    onChange={handleChange} />
+              </li>
               
-            </li>
+              {/* content textarea */}
+              <li className='flex relative mb-2'> 
+                <textarea 
+                    rows='20' 
+                    name='content' 
+                    value={content}
+                    onChange={handleChange}
+                    onFocus={()=>setDisplayMarkdownHint(true)}
+                    onBlur={()=>setDisplayMarkdownHint(false)}
+                    id='content' 
+                    placeholder='## Markdown'
+                    className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none'  />
 
-            {/* thumbnail */}
-            <li className='p-0.5 mt-1'>
-              <div
-                className={selectedThumbUrl ? 'flex flex-row rounded-t-md border border-white overflow-hidden' : 'flex flex-row rounded-md border border-white overflow-hidden'}>
-                <label htmlFor='thumbnail' className='w-32 rounded-l text-white bg-black hover:text-black hover:bg-white hover:border hover:border-black transition cursor-pointer flex items-center justify-center pt-1'>
-                  <span>이미지 업로드</span>
-                </label>
+                {/* markdown */}
+                { displayMarkdownHint && <MarkdownHint closeNav={closeNav} />}
+              </li>
 
-                <div 
-                  className='bg-white flex flex-row items-center w-full overflow-hidden'>
-                    <button 
-                        onClick={imageCopy}
-                        className='text-black py-0.5 px-1'
-                    >
-                      <span className='flex flex-col items-center justify-center'>
-                        <ImFileEmpty />
-                        <span className='text-xs h-3'>copy</span>
-                      </span>
-                    </button>
-                    <input
-                        type='text'
-                        value={imageUrlCopy}
-                        onChange={(e)=>setImageUrlCopy(e.target.value)}
-                        className='p-1 w-full h-8 rounded-md'
-                    />
-                </div>
-                
-                <input type='file' name='thumbnail'
-                       id='thumbnail'
-                       onChange={handleChange}
-                       hidden
-                />
-              </div>
-
-                {
-                    selectedThumbUrl 
-                    ? <div className='bg-white rounded-b-md p-1'>
-                        <img src={selectedThumbUrl} 
-                             alt='thumbnail'
-                             className='shadow-sm mt-1 max-h-40 border border-dashed border-gray-500 rounded overflow-hidden' />
-                      </div> 
-                    : ''
-                }
-            </li>
-
-            {/* tags */}
-            <li> 
-              <input type='text' name='tags' placeholder='태그' 
-                     className='border border-gray-800 rounded-md w-full mt-1 p-1' 
-                     id='tags'
-                     value={tags}
-                     onChange={handleChange}
-               />
-            </li>
-
-            {/* meta description */}
-            <li> 
-              <textarea rows='2' name='meta' placeholder='간단한 설명' 
-                        className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none' 
-                        id='meta'
+              {/* thumbnail */}
+              <li className='border border-black rounded-md mb-1'>
+                <div
+                  className={selectedThumbUrl ? 'flex flex-row rounded-t-md border border-white overflow-hidden' : 'flex flex-row rounded-md border border-white overflow-hidden'}>
+                  <label htmlFor='thumbnail' className='w-32 rounded-l text-white bg-black hover:text-black hover:bg-white hover:border hover:border-black transition cursor-pointer flex items-center justify-center pt-1'>
+                    <span>이미지 업로드</span>
+                  </label>
+                  
+                  {/* image link copy */}
+                  <div 
+                    className='bg-white flex flex-row items-center w-full overflow-hidden'>
+                      <button 
+                          onClick={imageCopy}
+                          className='text-black py-0.5 px-1'
+                      >
+                        <span className='flex flex-col items-center justify-center'>
+                          <ImFileEmpty />
+                          <span className='text-xs h-3'>copy</span>
+                        </span>
+                      </button>
+                      <input
+                          type='text'
+                          value={imageUrlCopy}
+                          onChange={(e)=>setImageUrlCopy(e.target.value)}
+                          className='p-1 w-full h-8 rounded-md'
+                      />
+                  </div>
+                  
+                  <input type='file' name='thumbnail'
+                        id='thumbnail'
                         onChange={handleChange}
-                        value={meta} />
-            </li>
-          </ul>
+                        hidden
+                  />
+                </div>
+
+                  {
+                      selectedThumbUrl 
+                      ? <div className='bg-white rounded-b-md p-1'>
+                          <img src={selectedThumbUrl} 
+                              alt='thumbnail'
+                              className='shadow-sm mt-1 max-h-40 border border-dashed border-gray-500 rounded overflow-hidden' />
+                        </div> 
+                      : ''
+                  }
+              </li>
+
+              {/* tags */}
+              <li className='mb-1'> 
+                <input type='text' name='tags' placeholder='태그' 
+                      className='border border-gray-800 rounded-md w-full mt-1 p-1' 
+                      id='tags'
+                      value={tags}
+                      onChange={handleChange}
+                />
+              </li>
+
+              {/* meta description */}
+              <li> 
+                <textarea rows='2' name='meta' placeholder='간단한 설명' 
+                          className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none' 
+                          id='meta'
+                          onChange={handleChange}
+                          value={meta} />
+              </li>
+            </ul>
 
 
-          <div className='flex flex-row justify-center items-center my-7'>
-            <button type='submit' className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black transition'>등록</button>
-            <button className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black transition'>취소</button>
-          </div>
-      </div>
-    </form>
+            <div className='flex flex-row justify-center items-center my-7'>
+              <button type='submit' className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black transition'>등록</button>
+              <button className='border-2 rounded-full inline-block py-3 px-10 mx-2 hover:bg-white text-white bg-black hover:text-black transition'>취소</button>
+            </div>
+        </div>
+      </form>
+
+      {
+        visible &&
+        <DeviceView
+            title={title}
+            content={content}
+            thumbnail={selectedThumbUrl}
+            onClose={()=>setVisible(false)}
+        />
+      }
+    </>
   )
 }
 

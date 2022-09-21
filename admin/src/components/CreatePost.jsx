@@ -3,9 +3,9 @@ import { createPost } from '../api/post'
 import { useValidation } from '../context/ValidationProvider'
 import { useNavigate } from 'react-router-dom';
 
-import PostForm, {defaultPost} from './PostForm_copy'
+import PostForm, {defaultPost} from './PostForm'
 
-const CreatePost = () => {
+const CreatePost = ({closeNav}) => {
 
   const [postInfo, setPostInfo] = useState(defaultPost);
   const [busy, setBusy] = useState(false);
@@ -21,7 +21,8 @@ const CreatePost = () => {
     if(error) return updateValidation(error);
 
     setResetAfterSubmit(true);
-    navigate(`/update-post/${post.slug}`);
+    // navigate(`/update-post/${post.slug}`);
+    navigate('/');
   }
 
   useEffect(()=>{
@@ -34,11 +35,14 @@ const CreatePost = () => {
 
   return (
     <PostForm 
+        closeNav={closeNav}
         onSubmit={handleSubmit} 
         initialPost={postInfo} 
         busy={busy}
+        postTitle='새 포스트 작성'
         postBtnTitle='Post'
-        resetAfterSubmit={resetAfterSubmit} />
+        resetAfterSubmit={resetAfterSubmit}
+    />
   )
 }
 

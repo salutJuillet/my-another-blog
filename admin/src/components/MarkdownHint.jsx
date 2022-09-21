@@ -8,34 +8,38 @@ const mdRules = [
     {title: 'Blockquote', rule:'> Your Quote'}
 ]
 
-const MarkdownHint = () => {
+const MarkdownHint = ({closeNav}) => {
 
   const container = useRef();
 
   useEffect(()=>{
-    container.current?.classList.remove('-translate-y-5', 'opacity-0')
-    container.current?.classList.add('-translate-y-0', 'opacity-1')
+    //nav의 열림/닫힘에 따라 markdown 위치 이동
+    if(closeNav) {
+      container.current?.classList.remove('bottom-0', '-left-2', '-translate-x-full')
+      container.current?.classList.add('bottom-0', '-right-2', 'translate-x-full')
+    }else{
+      container.current?.classList.remove('bottom-0', '-right-2', 'translate-x-full')
+      container.current?.classList.add('bottom-0', '-left-2', '-translate-x-full')
+    }
   }, [])
 
+ 
   return (
-    <div ref={container} className="bg-white px-2 py-4 rounded -translate-y-5 opacity-0">
-        <h1 className="font-semibold mt-2 mb-4 text-center">General markdown rules</h1>
-        <ul>
-            {
-                mdRules.map(({title,rule})=>{
-                    return (
-                        <li key={title} className='py-2'>
-                            <p className='font-semibold text-gray-500'>{title}</p>
-                            <p className='font-semibold text-gray-700 pl-2 font-mono text-sm'>{rule}</p>
-                        </li>
-                    )
-                })
-            }
-            <li className='text-center mt-3 mb-2'>
-                <a href='https://www.markdownguide.org/basic-syntax/' 
-                   target='_blank'>더보기</a>
-            </li>
-        </ul>
+    <div ref={container} className='border border-dashed border-black rounded absolute bg-white overflow-hidden'>
+        <h1 className='text-center mt-2 font-semibold text-gray-800'>General Markdown Rules</h1>
+        { 
+        mdRules.map(({title,rule})=>{
+            return (
+                <div key={title} className='p-2 list-none'>
+                    <p className='font-semibold text-gray-500'>{title}</p>
+                    <p className='font-semibold text-gray-700 pl-2 font-mono text-sm'>{rule}</p>
+                </div>
+            )
+        })
+        }
+        <div className='text-center mt-3 mb-2'>
+            <a href='https://www.markdownguide.org/basic-syntax/' target='_blank'>더보기</a>
+        </div>
     </div>
   )
 }

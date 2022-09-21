@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom'
 import { updatePost, getPost } from '../api/post'
 import { useValidation } from '../context/ValidationProvider'
 
-import PostForm, { defaultPost } from './PostForm_copy'
+import PostForm, { defaultPost } from './PostForm'
 import NotFound from './NotFound'
 
-const UpdatePost = () => {
+const UpdatePost = ({closeNav}) => {
 
   const {slug} = useParams();
   const { updateValidation } = useValidation();
@@ -41,7 +41,9 @@ const UpdatePost = () => {
   if(notFound) return <NotFound />
   return (
     <PostForm 
+        closeNav={closeNav}
         initialPost={postInfo}
+        postTitle='포스트 수정'
         postBtnTitle='Update'
         onSubmit={handleSubmit}
         busy={busy} />

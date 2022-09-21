@@ -28,7 +28,7 @@ const App = () => {
       </div>
       {/* 내용 영역 */}
       <div className='flex-1 min-h-screen'>
-        <div className='sticky top-0 bg-white-500'>
+        <div className='sticky top-0 z-10 bg-white bg-opacity-60'>
           <div className='flex item-center p-2'>
             <button onClick={toggleNav}>
               { closeNav ? <AiOutlineMenuUnfold size={25} /> : <AiOutlineMenuFold size={25} /> }
@@ -40,8 +40,8 @@ const App = () => {
         <div className='max-w-screen-lg mx-auto p-10'>
           <Routes>
             <Route path='/' element={<Home />} />
-            <Route path='/create-post' element={<CreatePost />} />
-            <Route path='/update-post/:slug' element={<UpdatePost />} />
+            <Route path='/create-post' element={<CreatePost closeNav={closeNav} />} />
+            <Route path='/update-post/:slug' element={<UpdatePost closeNav={closeNav} />} />
           </Routes>
         </div>
       </div>
