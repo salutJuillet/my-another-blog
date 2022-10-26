@@ -8,9 +8,8 @@
 # my-another-blog
 
 <div align="center">
-  <img src="public/images/my-another-blog-preview-01.png" width="250px"/>
-  <img src="public/images/my-another-blog-preview-02.png" width="250px"/>
-  <img src="public/images/my-another-blog-preview-03.png" width="250px"/>
+  <img src="admin/public/images/my-another-blog-preview-01.png" width="350px"/>
+  <img src="admin/public/images/my-another-blog-preview-02.png" width="350px"/>
 </div>
 
 아끼는 두 번쨰 블로그입니다! 자유롭게 포스트 작성, 수정, 삭제가 가능합니다.
