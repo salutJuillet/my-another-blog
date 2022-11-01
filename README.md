@@ -12,7 +12,7 @@
   <img src="admin/public/images/my-another-blog-preview-02.png" width="350px"/>
 </div>
 
-아끼는 두 번쨰 블로그입니다! 자유롭게 포스트 작성, 수정, 삭제가 가능합니다.
+아끼는 두 번 블로그입니다! 자유롭게 포스트 작성, 수정, 삭제가 가능합니다.
 <br/><br/>
 
 
