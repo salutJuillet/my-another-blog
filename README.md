@@ -1,6 +1,6 @@
 <!--
 # my-another-blog
-    [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=salutJuillet&layout=compact)](https://github.com/salutJuillet/MyBlog)
+    [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=salutJuillet&layout=compact)](https://github.com/salutJuillet/my-another-blog)
 -->
 
 
