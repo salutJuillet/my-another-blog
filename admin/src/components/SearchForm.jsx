@@ -22,7 +22,7 @@ const SearchForm = () => {
     <form className='relative' onSubmit={handleSubmit}>
         <input placeholder='search'
                className='border border-gray-500 outline-none rounded focus:ring-1 ring-blue-500 w-56 px-1 pt-1'
-               value={query}
+               value={query||''}
                onChange={({target})=>setQuery(target.value)} />
         {
           searchResult.length ? (
