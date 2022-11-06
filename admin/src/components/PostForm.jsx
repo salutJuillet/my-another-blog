@@ -182,13 +182,18 @@ const PostForm = ({
                     value={content}
                     onChange={handleChange}
                     onFocus={()=>setDisplayMarkdownHint(true)}
-                    onBlur={()=>setDisplayMarkdownHint(false)}
+                    // onBlur={()=>setDisplayMarkdownHint(false)}
                     id='content' 
                     placeholder='## Markdown'
                     className='border border-gray-800 rounded-md w-full mt-1 p-1 resize-none'  />
 
                 {/* markdown */}
-                { displayMarkdownHint && <MarkdownHint closeNav={closeNav} />}
+                { 
+                  displayMarkdownHint 
+                  && <MarkdownHint closeNav={closeNav}
+                                   displayMarkdownHint={displayMarkdownHint}
+                                   setDisplayMarkdownHint={setDisplayMarkdownHint} />
+                }
               </li>
 
               {/* thumbnail */}

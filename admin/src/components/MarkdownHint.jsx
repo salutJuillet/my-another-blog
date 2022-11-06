@@ -8,7 +8,7 @@ const mdRules = [
     {title: 'Blockquote', rule:'> Your Quote'}
 ]
 
-const MarkdownHint = ({closeNav}) => {
+const MarkdownHint = ({closeNav, displayMarkdownHint, setDisplayMarkdownHint}) => {
 
   const container = useRef();
 
@@ -25,7 +25,12 @@ const MarkdownHint = ({closeNav}) => {
 
  
   return (
-    <div ref={container} className='border border-dashed border-black rounded absolute bg-white overflow-hidden'>
+    <div 
+        ref={container} 
+        className='border border-dashed border-black rounded absolute bg-white overflow-hidden'
+        onMouseEnter={()=>setDisplayMarkdownHint(true)}
+        onMouseLeave={()=>setDisplayMarkdownHint(false)}
+    >
         <h1 className='text-center mt-2 font-semibold text-gray-800'>General Markdown Rules</h1>
         { 
         mdRules.map(({title,rule})=>{
@@ -37,7 +42,7 @@ const MarkdownHint = ({closeNav}) => {
             )
         })
         }
-        <div className='text-center mt-3 mb-2'>
+        <div className='text-center mt-3 mb-2 hover:underline'>
             <a href='https://www.markdownguide.org/basic-syntax/' target='_blank'>더보기</a>
         </div>
     </div>
