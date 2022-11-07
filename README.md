@@ -9,8 +9,9 @@
 
 <div align="center">
   <img src="admin/public/images/my-another-blog-preview-01.png" width="350px"/>
-  <img src="admin/public/images/my-another-blog-preview-02.png" width="350px"/>
-</div>
+  <img src="admin/public/images/my-another-blog-preview-02.png" width="350px"/> <br/>
+  <a href="https://youtu.be/zdW7J8rPsVU" target="_blank">https://youtu.be/zdW7J8rPsVU</a>
+</div> <br/><br/>
 
 아끼는 두 번 블로그입니다! 자유롭게 포스트 작성, 수정, 삭제가 가능합니다.
 <br/><br/>
