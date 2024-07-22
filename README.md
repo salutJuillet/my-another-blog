@@ -41,7 +41,7 @@ mongoimport.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/salutJuillet/MyBlog.git
+   git clone https://github.com/salutJuillet/my-another-blog.git
    ```
 2. Open command line and change current working directory to the cloned reposistory directory
 3. Import data
